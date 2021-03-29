@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <Title>DreamScreenNet</Title>
+        <Authors>Digitalhigh</Authors>
+        <Description>A Library for client/server interactions with DreamScreen devices</Description>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Devices" />
+    </ItemGroup>
+
+</Project>
