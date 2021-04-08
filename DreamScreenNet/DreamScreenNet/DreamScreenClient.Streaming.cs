@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using DreamScreenNet.Devices;
 using DreamScreenNet.Enum;
 
 namespace DreamScreenNet {
@@ -26,7 +27,7 @@ namespace DreamScreenNet {
 		/// <summary>
 		///     Begin subscribing to the designated device group
 		/// </summary>
-		/// <param name="subGroup">Target device group to which to subscribe</param>
+		/// <param name="target">Target Ip address to subscribe to</param>
 		public void StartSubscribing(IPAddress target) {
 			_subscribing = true;
 			_subDevice = target;
@@ -37,6 +38,7 @@ namespace DreamScreenNet {
 		/// </summary>
 		public void StopSubscribing() {
 			_subscribing = false;
+			_subDevice = null;
 		}
 
 		/// <summary>
@@ -90,12 +92,11 @@ namespace DreamScreenNet {
 		/// <summary>
 		///     Send colors to target IP address
 		/// </summary>
-		/// <param name="target">Device IP Address to send to</param>
-		/// <param name="group">Device group number</param>
+		/// <param name="target">Target device to send to</param>
 		/// <param name="colors">An array of 12 System.Drawing>Colors</param>
 		/// <returns></returns>
-		public async Task SendColors(IPAddress target, int group, IEnumerable<Color> colors) {
-			var msg = new Message(target, MessageType.ColorData, MessageFlag.ColorData, group) {
+		public async Task SendColors(DreamDevice target, IEnumerable<Color> colors) {
+			var msg = new Message(target.IpAddress, MessageType.ColorData, MessageFlag.ColorData, target.DeviceGroup) {
 				Payload = new Payload(colors.Cast<object>().ToArray())
 			};
 			await BroadcastMessageAsync(msg);

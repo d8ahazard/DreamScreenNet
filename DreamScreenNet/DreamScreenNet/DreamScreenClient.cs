@@ -237,7 +237,7 @@ namespace DreamScreenNet {
 			/// <summary>
 			///     The device the event relates to
 			/// </summary>
-			public DreamScreenResponse Response { get; set; }
+			public DreamScreenResponse Response { get; }
 
 			internal MessageEventArgs(DreamScreenResponse response) {
 				Response = response;

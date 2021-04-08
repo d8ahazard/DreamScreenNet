@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DreamScreenNet\DreamScreenNet.csproj" />
+      <ProjectReference Include="..\..\DreamScreenNet\DreamScreenNet.csproj" />
     </ItemGroup>
 
 </Project>

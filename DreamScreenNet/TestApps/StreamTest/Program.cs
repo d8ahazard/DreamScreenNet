@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Threading.Tasks;
 using DreamScreenNet;
 using DreamScreenNet.Devices;
@@ -19,24 +18,33 @@ namespace StreamTest {
 			client.StartDeviceDiscovery();
 			await Task.Delay(5000);
 			client.StopDeviceDiscovery();
+			var subscribing = false;
 			if (_devices.Count > 0) {
 				Console.WriteLine($"Found {_devices.Count} devices.");
-				var dev = _devices[0];
-				if (dev != null) {
-					var res = await client.SetMode(DeviceMode.Video, dev.IpAddress, dev.DeviceGroup);
-					Console.WriteLine("Mode Res: " + JsonConvert.SerializeObject(res));
-					res = await client.SetAmbientColor(Color.Crimson, dev.IpAddress, dev.DeviceGroup);
-					Console.WriteLine("Col Res: " + JsonConvert.SerializeObject(res));
-					res = await client.SetAmbientMode(AmbientMode.Scene, dev.IpAddress, dev.DeviceGroup);
-					Console.WriteLine("Mode Res: " + JsonConvert.SerializeObject(res));
-					res = await client.SetAmbientShow(AmbientShow.Forest, dev.IpAddress, dev.DeviceGroup);
-					Console.WriteLine("Mode Res: " + JsonConvert.SerializeObject(res));
-				}
+				foreach (var dev in _devices) {
+					if (dev.Type == DeviceType.Connect || dev.Type == DeviceType.SideKick) {
+						continue;
+					}
 
+					Console.WriteLine($"DreamScreen found, beginning subscribe test for {dev.IpAddress}");
+					client.ColorsReceived += ColorsReceived;
+					client.StartSubscribing(dev.IpAddress);
+					subscribing = true;
+					break;
+				}
+			}
+
+			if (subscribing) {
 				while (true) {
+					// Log color messages
 				}
 			}
 		}
+
+		private static void ColorsReceived(object? sender, DreamScreenClient.DeviceColorEventArgs e) {
+			Console.WriteLine("Colors received: " + JsonConvert.SerializeObject(e.Colors));
+		}
+
 
 		private static void LogCommand(object? sender, DreamScreenClient.MessageEventArgs e) {
 			Console.WriteLine($"We got us a command from {e.Response.Target}: " + e.Response.Type);
