@@ -8,21 +8,22 @@ using System.Text;
 
 namespace DreamScreenNet {
 	/// <summary>
-	/// A wrapper class for a byte payload
-	/// Any time the payload is read from, our pointer increments
-	/// the proper number of bytes until the end is reached,
-	/// at which time a message will be logged. Should eventually throw an error or something...
+	///     A wrapper class for a byte payload
+	///     Any time the payload is read from, our pointer increments
+	///     the proper number of bytes until the end is reached,
+	///     at which time a message will be logged. Should eventually throw an error or something...
 	/// </summary>
 	public class Payload {
 		/// <summary>
-		/// Get the length of the internal byte array
+		///     Get the length of the internal byte array
 		/// </summary>
 		public int Length => _data.Count;
 
 		/// <summary>
-		/// Get the current position of the array
+		///     Get the current position of the array
 		/// </summary>
 		public int Position => (int) _ms.Position;
+
 		public List<object> Objects { get; set; }
 
 		private readonly BinaryReader _br;
@@ -32,7 +33,7 @@ namespace DreamScreenNet {
 
 
 		/// <summary>
-		/// Initialize a new, empty payload where we can serialize outgoing data
+		///     Initialize a new, empty payload where we can serialize outgoing data
 		/// </summary>
 		public Payload() {
 			_data = new List<byte>();
@@ -43,7 +44,7 @@ namespace DreamScreenNet {
 		}
 
 		/// <summary>
-		/// Create a payload from an array of objects
+		///     Create a payload from an array of objects
 		/// </summary>
 		/// <param name="args"></param>
 		/// <exception cref="NotSupportedException"></exception>
@@ -103,7 +104,7 @@ namespace DreamScreenNet {
 		}
 
 		/// <summary>
-		/// Initialize with a byte array
+		///     Initialize with a byte array
 		/// </summary>
 		/// <param name="data"></param>
 		public Payload(byte[] data) {
@@ -115,7 +116,7 @@ namespace DreamScreenNet {
 		}
 
 		/// <summary>
-		/// Return our base byte list as an array
+		///     Return our base byte list as an array
 		/// </summary>
 		/// <returns></returns>
 		public byte[] ToArray() {
@@ -123,7 +124,7 @@ namespace DreamScreenNet {
 		}
 
 		/// <summary>
-		/// Return our base byte list
+		///     Return our base byte list
 		/// </summary>
 		/// <returns></returns>
 		public List<byte> ToList() {
@@ -131,7 +132,7 @@ namespace DreamScreenNet {
 		}
 
 		/// <summary>
-		/// Serialize base byte list to a string
+		///     Serialize base byte list to a string
 		/// </summary>
 		/// <returns></returns>
 		public override string ToString() {
@@ -139,7 +140,7 @@ namespace DreamScreenNet {
 		}
 
 		/// <summary>
-		/// Check to see if we still have data to read
+		///     Check to see if we still have data to read
 		/// </summary>
 		/// <returns></returns>
 		public bool HasContent() {
@@ -147,7 +148,7 @@ namespace DreamScreenNet {
 		}
 
 		/// <summary>
-		/// Rewind our pointer N bytes
+		///     Rewind our pointer N bytes
 		/// </summary>
 		/// <param name="len">How far to rewind. Default is 1.</param>
 		public void Rewind(int len = 1) {
@@ -159,7 +160,7 @@ namespace DreamScreenNet {
 		}
 
 		/// <summary>
-		/// Forward our pointer N bytes
+		///     Forward our pointer N bytes
 		/// </summary>
 		/// <param name="len">How far to advance. Default is 1.</param>
 		public void Advance(int len = 1) {
@@ -171,14 +172,14 @@ namespace DreamScreenNet {
 		}
 
 		/// <summary>
-		/// Forward the pointer to the end of the array
+		///     Forward the pointer to the end of the array
 		/// </summary>
 		public void FastForward() {
 			_ms.Seek(0, SeekOrigin.End);
 		}
 
 		/// <summary>
-		/// Reset our pointer to 0
+		///     Reset our pointer to 0
 		/// </summary>
 		public void Reset() {
 			_ms.Seek(0, SeekOrigin.Begin);
@@ -191,16 +192,17 @@ namespace DreamScreenNet {
 				var epoch = stamp / 1000;
 				Debug.WriteLine("Stamp: " + epoch);
 				date = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-						.AddSeconds(epoch); 
+					.AddSeconds(epoch);
 			} catch (Exception e) {
 				Debug.WriteLine("Exception: " + e.Message);
 			}
+
 			Objects.Add(date);
 			return date;
 		}
 
 		/// <summary>
-		/// Get an array of bytes from the reader
+		///     Get an array of bytes from the reader
 		/// </summary>
 		/// <param name="len"></param>
 		/// <returns></returns>
@@ -211,7 +213,7 @@ namespace DreamScreenNet {
 		}
 
 		/// <summary>
-		/// Read Uint8 from array and increment pointer 1 byte
+		///     Read Uint8 from array and increment pointer 1 byte
 		/// </summary>
 		/// <returns>byte</returns>
 		public byte GetUint8() {
@@ -231,7 +233,7 @@ namespace DreamScreenNet {
 		}
 
 		/// <summary>
-		/// Read UInt16 from array and increment pointer 2 bytes
+		///     Read UInt16 from array and increment pointer 2 bytes
 		/// </summary>
 		/// <returns>ushort</returns>
 		public ushort GetUInt16() {
@@ -247,7 +249,7 @@ namespace DreamScreenNet {
 		}
 
 		/// <summary>
-		/// Read Int16 from array and increment pointer 2 bytes.
+		///     Read Int16 from array and increment pointer 2 bytes.
 		/// </summary>
 		/// <returns>short</returns>
 		public short GetInt16() {
@@ -257,17 +259,17 @@ namespace DreamScreenNet {
 			} catch {
 				Debug.WriteLine($"Error getting int16 from payload, pointer {_ms.Position} of range: " + _len);
 			}
-		
+
 			Objects.Add(num);
 			return num;
 		}
 
 		/// <summary>
-		/// Read Int32 from array and increment pointer 4 bytes.
+		///     Read Int32 from array and increment pointer 4 bytes.
 		/// </summary>
 		/// <returns>int</returns>
 		public int GetInt32() {
-			int num = 0;
+			var num = 0;
 			try {
 				num = _br.ReadInt32();
 			} catch {
@@ -279,7 +281,7 @@ namespace DreamScreenNet {
 		}
 
 		/// <summary>
-		/// Read a UInt32 from array and increment pointer 4 bytes.
+		///     Read a UInt32 from array and increment pointer 4 bytes.
 		/// </summary>
 		/// <returns></returns>
 		public uint GetUInt32() {
@@ -295,7 +297,7 @@ namespace DreamScreenNet {
 		}
 
 		/// <summary>
-		/// Read an Int64 from array and increment pointer 8 bytes.
+		///     Read an Int64 from array and increment pointer 8 bytes.
 		/// </summary>
 		/// <returns>long</returns>
 		public long GetInt64() {
@@ -311,7 +313,7 @@ namespace DreamScreenNet {
 		}
 
 		/// <summary>
-		/// Read a UInt64 from array and increment pointer 8 bytes.
+		///     Read a UInt64 from array and increment pointer 8 bytes.
 		/// </summary>
 		/// <returns>ulong</returns>
 		public ulong GetUInt64() {
@@ -327,40 +329,45 @@ namespace DreamScreenNet {
 		}
 
 		/// <summary>
-		/// Read a Float32 from array and increment pointer 4 bytes.
+		///     Read a Float32 from array and increment pointer 4 bytes.
 		/// </summary>
 		/// <returns>float</returns>
 		public float GetFloat32() {
-			float num = 0f;
+			var num = 0f;
 			try {
 				num = _br.ReadSingle();
 			} catch {
 				Debug.WriteLine($"Error getting Float32 from payload, pointer {_ms.Position} of range: " + _len);
 			}
+
 			Objects.Add(num);
 			return num;
 		}
 
 		/// <summary>
-		/// Read a string from our payload.
+		///     Read a string from our payload.
 		/// </summary>
 		/// <param name="length">The number of chars to read. If none specified, will read the entire payload</param>
 		/// <returns>string</returns>
 		public string GetString(long length = -1) {
 			var output = string.Empty;
-			if (length == -1) length = _len - 1 - _ms.Position;
+			if (length == -1) {
+				length = _len - 1 - _ms.Position;
+			}
+
 			try {
 				var str = _br.ReadChars((int) length);
-				StringBuilder builder = new StringBuilder();
-				foreach (var value in str){
+				StringBuilder builder = new();
+				foreach (var value in str) {
 					builder.Append(value);
 				}
-				output = builder.ToString();
-				output = (string) output.Replace("\0",string.Empty).ToString();
 
+				output = builder.ToString();
+				output = (string) output.Replace("\0", string.Empty);
 			} catch {
 				Debug.WriteLine($"Error getting string, pointer {_ms.Position} out of range: " + _len);
 			}
+
 			Objects.Add(output);
 			return output;
 		}
@@ -375,13 +382,14 @@ namespace DreamScreenNet {
 					paddedBytes[i] = 0;
 				}
 			}
+
 			_data.AddRange(paddedBytes);
 		}
 
 		private void Add(byte input) {
 			_data.Add(input);
 		}
-		
+
 		private void Add(Color color) {
 			_data.Add(color.R);
 			_data.Add(color.G);

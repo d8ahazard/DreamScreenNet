@@ -8,9 +8,10 @@ using DreamScreenNet.Enum;
 using Newtonsoft.Json;
 
 namespace StreamTest {
-	class Program {
+	internal class Program {
 		private static List<DreamDevice> _devices;
-		static async Task Main(string[] args) {
+
+		private static async Task Main(string[] args) {
 			var client = new DreamScreenClient();
 			_devices = new List<DreamDevice>();
 			client.DeviceDiscovered += AddDevice;
@@ -33,12 +34,8 @@ namespace StreamTest {
 				}
 
 				while (true) {
-					
 				}
 			}
-
-			
-			
 		}
 
 		private static void LogCommand(object? sender, DreamScreenClient.MessageEventArgs e) {
@@ -48,7 +45,5 @@ namespace StreamTest {
 		private static void AddDevice(object? sender, DreamScreenClient.DeviceDiscoveryEventArgs e) {
 			_devices.Add(e.Device);
 		}
-		
-		
 	}
 }

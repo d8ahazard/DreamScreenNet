@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
 using System.Threading;
-using System.Threading.Tasks;
 using DreamScreenNet;
-using Newtonsoft.Json;
 
 namespace DiscoveryTest {
-	class Program {
-		
-		static void Main() {
+	internal class Program {
+		private static void Main() {
 			var client = new DreamScreenClient();
 			var source = new CancellationTokenSource();
 			client.DeviceDiscovered += ProcessDevice;
@@ -18,8 +12,8 @@ namespace DiscoveryTest {
 			client.StartDeviceDiscovery();
 			var token = source.Token;
 			while (!token.IsCancellationRequested) {
-				
 			}
+
 			client.StopDeviceDiscovery();
 			client.Dispose();
 		}

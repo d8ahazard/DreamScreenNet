@@ -1,9 +1,7 @@
 ﻿#region
 
 using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Security.Cryptography;
 using DreamScreenNet.Enum;
 
 #endregion
@@ -12,13 +10,22 @@ namespace DreamScreenNet.Devices {
 	public class SideKick : DreamDevice {
 		public SideKick(Payload payload, IPAddress address) {
 			IpAddress = address;
-			var dd = new DreamDevice {DeviceTag = "SideKick"};
-			if (payload is null) throw new ArgumentNullException(nameof(payload));
+			var dd = new DreamDevice {Type = DeviceType.SideKick};
+			if (payload is null) {
+				throw new ArgumentNullException(nameof(payload));
+			}
+
 			var name = payload.GetString(16);
-			if (name.Length == 0) name = dd.DeviceTag;
+			if (name.Length == 0) {
+				name = dd.Type.ToString();
+			}
+
 			dd.Name = name;
 			var groupName = payload.GetString(16);
-			if (groupName.Length == 0) groupName = "unassigned";
+			if (groupName.Length == 0) {
+				groupName = "unassigned";
+			}
+
 			dd.GroupName = groupName;
 			dd.DeviceGroup = payload.GetUint8();
 			dd.DeviceMode = payload.GetUint8();
@@ -48,7 +55,7 @@ namespace DreamScreenNet.Devices {
 				new byte[16],
 				AmbientMode,
 				AmbientShowType,
-				(byte)DeviceType.SideKick
+				(byte) DeviceType.SideKick
 			};
 			return new Payload(args).ToArray();
 		}

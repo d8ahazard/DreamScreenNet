@@ -1,5 +1,5 @@
 ﻿namespace DreamScreenNet.Enum {
-	public enum MessageType : int {
+	public enum MessageType {
 		Invalid = -1,
 		GetSerial = 259,
 		ResetEsp = 261,
