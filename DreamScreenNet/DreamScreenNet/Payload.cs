@@ -56,8 +56,8 @@ namespace DreamScreenNet {
 					case byte b:
 						Add(b);
 						break;
-					case ushort @ushort:
-						Add((byte) @ushort);
+					case ushort us:
+						Add(us);
 						break;
 					case uint u:
 						Add(u);
@@ -363,7 +363,7 @@ namespace DreamScreenNet {
 				}
 
 				output = builder.ToString();
-				output = (string) output.Replace("\0", string.Empty);
+				output = output.Replace("\0", string.Empty);
 			} catch {
 				Debug.WriteLine($"Error getting string, pointer {_ms.Position} out of range: " + _len);
 			}

@@ -29,19 +29,16 @@ namespace DreamScreenNet {
 		private void ProcessDeviceDiscoveryMessage(IPAddress remoteAddress, DreamScreenResponse.StateResponse msg) {
 			var id = msg.Target.ToString();
 			msg.Identifier = 2;
-			Console.WriteLine($"Processing device discovery message for {remoteAddress}: {id}");
-
+			
 			if (_discoveredDevices.ContainsKey(id)) {
 				_discoveredDevices[id].LastSeen = DateTime.UtcNow; //Update datestamp
 				_discoveredDevices[id].IpAddress = remoteAddress; //Update hostname in case IP changed
-				Console.WriteLine("Device already discovered, skipping.");
 				return;
 			}
 
 			if (msg.Identifier != _discoverSourceId || //did we request the discovery?
 			    _discoverCancellationSource == null ||
 			    _discoverCancellationSource.IsCancellationRequested) {
-				Console.WriteLine($"Source mismatch or cancellation: {msg.Identifier} vs {_discoverSourceId}");
 				return;
 			}
 
@@ -51,7 +48,6 @@ namespace DreamScreenNet {
 
 			_discoveredDevices[id] = msg.Device;
 			_devices.Add(msg.Device);
-			Console.WriteLine("Device added...");
 			DeviceDiscovered?.Invoke(this, new DeviceDiscoveryEventArgs(msg.Device));
 		}
 
@@ -75,7 +71,6 @@ namespace DreamScreenNet {
 
 			//Start discovery thread
 			Task.Run(async () => {
-				Debug.WriteLine("Sending GetServices...");
 				await BroadcastMessageAsync(discoPacket);
 				while (!token.IsCancellationRequested) {
 					try {

@@ -110,15 +110,8 @@ namespace DreamScreenNet {
 					case DeviceType.DreamScreenHd:
 					case DeviceType.DreamScreen4K:
 						var ds = new DreamScreen(message.Payload, message.Target);
-						Debug.WriteLine("Created dreamscreen: " + ds.Name);
 						Device = ds;
 						break;
-				}
-
-				if (Device != null) {
-					Debug.WriteLine("Device set: " + Device.Name);
-				} else {
-					Debug.WriteLine("Device is still freaking null??");
 				}
 			}
 		}

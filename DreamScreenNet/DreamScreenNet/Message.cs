@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -122,7 +123,6 @@ namespace DreamScreenNet {
 			var iv2 = BitConverter.ToInt16(bytes, 0);
 			Type = (MessageType) iv2;
 			if (!CheckCrc(input) || magic != 0xFC || input.Length < 7) {
-				Console.WriteLine("invalid msg.");
 				throw new InvalidDataException("Invalid message.");
 			}
 

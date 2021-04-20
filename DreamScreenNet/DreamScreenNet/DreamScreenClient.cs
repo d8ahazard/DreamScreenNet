@@ -17,7 +17,6 @@ namespace DreamScreenNet {
 		private readonly UdpClient _sender;
 		private readonly CancellationTokenSource _cts;
 		private readonly UdpClient _listener;
-		private Task _listenTask;
 		private readonly List<DreamScreenResponse> _messages;
 
 		/// <summary>
@@ -88,8 +87,8 @@ namespace DreamScreenNet {
 			var remote = endpoint;
 			var msg = new Message(data, endpoint.Address);
 			var response = DreamScreenResponse.Create(msg);
-			Debug.WriteLine("{0}=>LOCAL::{1}: {2}", remote, msg.Type,
-				string.Join(",", (from a in data select a.ToString("X2")).ToArray()));
+			// Debug.WriteLine("{0}=>LOCAL::{1}: {2}", remote, msg.Type,
+			// 	string.Join(",", (from a in data select a.ToString("X2")).ToArray()));
 			switch (response.Type) {
 				case MessageType.DeviceDiscovery:
 					if (msg.Flag != MessageFlag.SystemMessage) {
@@ -102,17 +101,13 @@ namespace DreamScreenNet {
 					if (msg.Flag == MessageFlag.SystemMessage) {
 						SubscriptionRequested?.Invoke(this, new DeviceSubscriptionEventArgs(msg.Target));
 						if (_subscribing && Equals(msg.Target, _subDevice)) {
-							Debug.WriteLine("Sending sub response...");
+							//Debug.WriteLine("Sending sub response...");
 							var resp = new Message(msg.Target, MessageType.Subscribe, MessageFlag.SubscriptionResponse,
 								msg.Group) {Payload = new Payload(new object[] {(byte) 0x01})};
 							BroadcastMessageAsync(resp).ConfigureAwait(false);
-						} else {
-							Debug.WriteLine("Ignoring sub msg: " + JsonConvert.SerializeObject(msg));
 						}
-					} else {
-						Debug.WriteLine("Sub flag: " + msg.Flag);
 					}
-
+					
 					if (msg.Flag == MessageFlag.SubscriptionResponse) {
 						if (_announceSubscription) {
 							_subscribers[msg.Target] = 3;
@@ -121,7 +116,6 @@ namespace DreamScreenNet {
 
 					break;
 				case MessageType.ColorData:
-					Debug.WriteLine("Colordata...");
 					var cResp = (DreamScreenResponse.ColorResponse) response;
 					if (_subscribing) {
 						ColorsReceived?.Invoke(msg.Target, new DeviceColorEventArgs(cResp.Colors));
@@ -156,9 +150,9 @@ namespace DreamScreenNet {
 			var data = packet.Encode();
 
 			var ep = new IPEndPoint(packet.Target, 8888);
-			Debug.WriteLine($"LOCAL=>{ep}::{packet.Type}: "
-			                +
-				                string.Join(",", (from a in data select a.ToString("X2")).ToArray()));
+			// Debug.WriteLine($"LOCAL=>{ep}::{packet.Type}: "
+			//                 +
+			// 	                string.Join(",", (from a in data select a.ToString("X2")).ToArray()));
 
 			await _sender.SendAsync(data, data.Length, ep);
 		}

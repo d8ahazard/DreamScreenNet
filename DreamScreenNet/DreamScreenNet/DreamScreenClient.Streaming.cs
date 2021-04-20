@@ -32,7 +32,6 @@ namespace DreamScreenNet {
 		public void StartSubscribing(IPAddress target) {
 			_subscribing = true;
 			_subDevice = target;
-			Debug.WriteLine("Starting subscription to " + _subDevice);
 		}
 
 		/// <summary>

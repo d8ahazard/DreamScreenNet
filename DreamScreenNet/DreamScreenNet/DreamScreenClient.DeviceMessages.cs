@@ -17,7 +17,6 @@ namespace DreamScreenNet {
 			var msg = new Message(target.IpAddress, MessageType.Mode, flag, target.DeviceGroup)
 				{Payload = new Payload(new object[] {(byte) mode})};
 			var response = await BroadcastMessageForResponse(msg);
-			Console.WriteLine("Response here is " + response.Type);
 			return response;
 		}
 
