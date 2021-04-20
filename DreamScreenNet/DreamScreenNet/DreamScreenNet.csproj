@@ -10,14 +10,16 @@
         <PackageVersion>1.0.1</PackageVersion>
         <PackageProjectUrl>https://github.com/d8ahazard/DreamScreenNet</PackageProjectUrl>
         <PackageReleaseNotes>Initial release, may contain bugs. :P</PackageReleaseNotes>
+        <PackageLicenseUrl>https://licenses.nuget.org/MIT</PackageLicenseUrl>
+        <PackageIconUrl>https://lh3.googleusercontent.com/-2YJz54ztzLh5Dc2Q9Z5WCtYUe7PNzQHuAkwNoLc14WURd6Li94t_tqoLnLp4JHEBi5a=s150-rw</PackageIconUrl>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+      <Folder Include="Devices" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Devices" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     </ItemGroup>
 
 </Project>

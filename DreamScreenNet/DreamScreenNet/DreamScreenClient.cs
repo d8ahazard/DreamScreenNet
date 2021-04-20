@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using DreamScreenNet.Enum;
-using Newtonsoft.Json;
 
 namespace DreamScreenNet {
 	public partial class DreamScreenClient : IDisposable {
