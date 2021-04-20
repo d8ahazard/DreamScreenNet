@@ -8,13 +8,13 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using DreamScreenNet.Enum;
+using Newtonsoft.Json;
 
 namespace DreamScreenNet {
 	public partial class DreamScreenClient : IDisposable {
 		private readonly IPAddress _broadcastIp = IPAddress.Parse("255.255.255.255");
 		private readonly bool _disposeSender;
 		private readonly UdpClient _sender;
-		private readonly Dictionary<uint, Action<DreamScreenResponse>> _taskCompletions = new();
 		private readonly CancellationTokenSource _cts;
 		private readonly UdpClient _listener;
 		private Task _listenTask;
@@ -37,7 +37,7 @@ namespace DreamScreenNet {
 			_listener.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 			_cts = new CancellationTokenSource();
 			_messages = new List<DreamScreenResponse>();
-			_listenTask = Task.Run(async () => { await Listen(_cts.Token); });
+			Task.Run(async () => { await Listen(_cts.Token); });
 			_subscribers = new Dictionary<IPAddress, int>();
 		}
 
@@ -57,7 +57,7 @@ namespace DreamScreenNet {
 			_listener.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 			_cts = new CancellationTokenSource();
 			_messages = new List<DreamScreenResponse>();
-			_listenTask = Task.Run(async () => { await Listen(_cts.Token); });
+			Task.Run(async () => { await Listen(_cts.Token); });
 			_subscribers = new Dictionary<IPAddress, int>();
 		}
 
@@ -88,6 +88,8 @@ namespace DreamScreenNet {
 			var remote = endpoint;
 			var msg = new Message(data, endpoint.Address);
 			var response = DreamScreenResponse.Create(msg);
+			Debug.WriteLine("{0}=>LOCAL::{1}: {2}", remote, msg.Type,
+				string.Join(",", (from a in data select a.ToString("X2")).ToArray()));
 			switch (response.Type) {
 				case MessageType.DeviceDiscovery:
 					if (msg.Flag != MessageFlag.SystemMessage) {
@@ -100,9 +102,12 @@ namespace DreamScreenNet {
 					if (msg.Flag == MessageFlag.SystemMessage) {
 						SubscriptionRequested?.Invoke(this, new DeviceSubscriptionEventArgs(msg.Target));
 						if (_subscribing && Equals(msg.Target, _subDevice)) {
+							Debug.WriteLine("Sending sub response...");
 							var resp = new Message(msg.Target, MessageType.Subscribe, MessageFlag.SubscriptionResponse,
 								msg.Group) {Payload = new Payload(new object[] {(byte) 0x01})};
 							BroadcastMessageAsync(resp).ConfigureAwait(false);
+						} else {
+							Debug.WriteLine("Ignoring sub msg: " + JsonConvert.SerializeObject(msg));
 						}
 					} else {
 						Debug.WriteLine("Sub flag: " + msg.Flag);
@@ -116,6 +121,7 @@ namespace DreamScreenNet {
 
 					break;
 				case MessageType.ColorData:
+					Debug.WriteLine("Colordata...");
 					var cResp = (DreamScreenResponse.ColorResponse) response;
 					if (_subscribing) {
 						ColorsReceived?.Invoke(msg.Target, new DeviceColorEventArgs(cResp.Colors));
@@ -137,64 +143,24 @@ namespace DreamScreenNet {
 					break;
 			}
 
-			if (remote.Port == 8888) {
-				Debug.WriteLine("Received {0} from {1}:{2}", msg.Type, remote,
-					string.Join(",", (from a in data select a.ToString("X2")).ToArray()));
-			}
+			
 		}
 
 
-		private async Task<DreamScreenResponse?> BroadcastMessageAsync(Message packet) {
-			Debug.WriteLine($"LOCAL=>{packet.Target}::{packet.Type}: " + packet);
-			return await BroadcastPayloadAsync<DreamScreenResponse>(packet);
-		}
 
 
-		private async Task<T?> BroadcastPayloadAsync<T>(Message packet)
-			where T : DreamScreenResponse {
+		private async Task BroadcastMessageAsync(Message packet) {
 			if (_sender == null) {
 				throw new InvalidOperationException("No valid socket");
 			}
-
 			var data = packet.Encode();
-			Debug.WriteLine($"Sending {packet.Type} to {packet.Target}" +
-			                string.Join(",", (from a in data select a.ToString("X2")).ToArray()));
 
+			var ep = new IPEndPoint(packet.Target, 8888);
+			Debug.WriteLine($"LOCAL=>{ep}::{packet.Type}: "
+			                +
+				                string.Join(",", (from a in data select a.ToString("X2")).ToArray()));
 
-			TaskCompletionSource<T>? tcs = null;
-			if (packet.Identifier > 0 &&
-			    typeof(T) != typeof(DreamScreenResponse.UnknownResponse)) {
-				tcs = new TaskCompletionSource<T>();
-
-				void Action(DreamScreenResponse r) {
-					if (r.GetType() == typeof(T)) {
-						tcs.TrySetResult((T) r);
-					}
-				}
-
-				_taskCompletions[packet.Identifier] = Action;
-			}
-
-			var msg = packet.Encode();
-			await _sender.SendAsync(msg, msg.Length, packet.Target.ToString(), 8888);
-
-			T result;
-			if (tcs == null) {
-				return null;
-			}
-
-			var _ = Task.Delay(1000).ContinueWith(t => {
-				if (!t.IsCompleted) {
-					tcs.TrySetException(new TimeoutException());
-				}
-			});
-			try {
-				result = await tcs.Task.ConfigureAwait(false);
-			} finally {
-				_taskCompletions.Remove(packet.Identifier);
-			}
-
-			return result;
+			await _sender.SendAsync(data, data.Length, ep);
 		}
 
 

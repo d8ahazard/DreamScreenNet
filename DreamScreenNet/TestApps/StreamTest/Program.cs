@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using DreamScreenNet;
 using DreamScreenNet.Devices;
@@ -11,6 +12,9 @@ namespace StreamTest {
 		private static List<DreamDevice> _devices;
 
 		private static async Task Main(string[] args) {
+			var tr1 = new TextWriterTraceListener(System.Console.Out);
+			Trace.Listeners.Add(tr1);
+
 			var client = new DreamScreenClient();
 			_devices = new List<DreamDevice>();
 			client.DeviceDiscovered += AddDevice;
@@ -25,8 +29,10 @@ namespace StreamTest {
 					if (dev.Type == DeviceType.Connect || dev.Type == DeviceType.SideKick) {
 						continue;
 					}
-
-					Console.WriteLine($"DreamScreen found, beginning subscribe test for {dev.IpAddress}");
+					var curMode = dev.DeviceMode;
+					Console.WriteLine($"DreamScreen found, beginning subscribe test for {dev.IpAddress}, current mode is {curMode}.");
+					await client.SetMode(dev, DeviceMode.Off);
+					await client.SetMode(dev, DeviceMode.Video);
 					client.ColorsReceived += ColorsReceived;
 					client.StartSubscribing(dev.IpAddress);
 					subscribing = true;

@@ -33,8 +33,7 @@ namespace MessageTest {
 					res = await client.SetAmbientShow(dev, AmbientShow.Forest);
 					Console.WriteLine("Mode Res: " + JsonConvert.SerializeObject(res));
 					while (true) {
-						Console.WriteLine("Press ctrl+C to exit.");
-					 // Hang out and wait for ctrl+c
+						
 					}
 
 					await client.SetMode(dev, DeviceMode.Off);

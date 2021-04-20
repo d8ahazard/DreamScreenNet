@@ -18,7 +18,7 @@ namespace DreamScreenNet.Devices {
 			Name = payload.GetString(16);
 			GroupName = payload.GetString(16);
 			DeviceGroup = payload.GetUint8();
-			DeviceMode = payload.GetUint8();
+			DeviceMode = (DeviceMode) payload.GetUint8();
 			Brightness = payload.GetUint8();
 			Zones = payload.GetUint8();
 			ZonesBrightness = payload.GetBytes(4);

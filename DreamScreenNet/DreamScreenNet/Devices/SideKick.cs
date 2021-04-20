@@ -28,7 +28,7 @@ namespace DreamScreenNet.Devices {
 
 			dd.GroupName = groupName;
 			dd.DeviceGroup = payload.GetUint8();
-			dd.DeviceMode = payload.GetUint8();
+			dd.DeviceMode = (DeviceMode) payload.GetUint8();
 			dd.Brightness = payload.GetUint8();
 			dd.AmbientColor = payload.GetColor();
 			dd.Saturation = payload.GetColor();

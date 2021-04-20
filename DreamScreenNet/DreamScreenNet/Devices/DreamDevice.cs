@@ -117,7 +117,7 @@ namespace DreamScreenNet.Devices {
 
 		[DefaultValue(0)]
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
-		public int DeviceMode { get; set; }
+		public DeviceMode DeviceMode { get; set; }
 
 		[DefaultValue(0)]
 		[JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]

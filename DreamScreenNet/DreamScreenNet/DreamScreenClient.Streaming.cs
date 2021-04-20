@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Net;
@@ -31,6 +32,7 @@ namespace DreamScreenNet {
 		public void StartSubscribing(IPAddress target) {
 			_subscribing = true;
 			_subDevice = target;
+			Debug.WriteLine("Starting subscription to " + _subDevice);
 		}
 
 		/// <summary>
