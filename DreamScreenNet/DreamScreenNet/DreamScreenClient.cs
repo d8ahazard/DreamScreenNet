@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
@@ -85,6 +86,7 @@ namespace DreamScreenNet {
 			var remote = endpoint;
 			var msg = new Message(data, endpoint.Address);
 			var response = DreamScreenResponse.Create(msg);
+			//Debug.WriteLine("Msg: " + msg.Type);
 			// Debug.WriteLine("{0}=>LOCAL::{1}: {2}", remote, msg.Type,
 			// 	string.Join(",", (from a in data select a.ToString("X2")).ToArray()));
 			switch (response.Type) {
@@ -103,6 +105,9 @@ namespace DreamScreenNet {
 							var resp = new Message(msg.Target, MessageType.Subscribe, MessageFlag.SubscriptionResponse,
 								msg.Group) {Payload = new Payload(new object[] {(byte) 0x01})};
 							BroadcastMessageAsync(resp).ConfigureAwait(false);
+						} else {
+							//Debug.WriteLine($"Sub responses don't match or not subscribing: {msg.Target}, {_subDevice}");
+
 						}
 					}
 					

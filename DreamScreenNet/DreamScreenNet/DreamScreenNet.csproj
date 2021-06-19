@@ -7,7 +7,7 @@
         <Authors>Digitalhigh</Authors>
         <Description>A Library for client/server interactions with DreamScreen devices</Description>
         <Nullable>enable</Nullable>
-        <PackageVersion>1.0.1</PackageVersion>
+        <PackageVersion>1.0.3</PackageVersion>
         <PackageProjectUrl>https://github.com/d8ahazard/DreamScreenNet</PackageProjectUrl>
         <PackageReleaseNotes>Initial release, may contain bugs. :P</PackageReleaseNotes>
         <PackageLicenseUrl>https://licenses.nuget.org/MIT</PackageLicenseUrl>
