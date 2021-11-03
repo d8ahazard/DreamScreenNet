@@ -49,7 +49,6 @@ namespace DreamScreenNet.Devices {
 			HdmiActiveChannels = payload.GetUint8();
 			payload.Advance(4);
 			ColorBoost = payload.GetUint8();
-			Console.WriteLine("CB");
 			if (payload.Length >= 137) {
 				CecPowerEnable = payload.GetUint8();
 			}
@@ -72,8 +71,7 @@ namespace DreamScreenNet.Devices {
 
 			var encoded = payload.ToArray();
 			Type = (DeviceType) encoded[encoded.Length - 1];
-			Console.WriteLine("Rewound: " + Type);
-
+			
 			if (payload is null) {
 				throw new ArgumentNullException(nameof(payload));
 			}
@@ -81,8 +79,6 @@ namespace DreamScreenNet.Devices {
 			if (payload.Length < 132) {
 				throw new ArgumentException($"Payload length is too short: {payload}");
 			}
-
-			Console.WriteLine("Good: " + Type);
 		}
 
 		public new byte[] EncodeState() {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -86,9 +87,6 @@ namespace DreamScreenNet {
 			var remote = endpoint;
 			var msg = new Message(data, endpoint.Address);
 			var response = DreamScreenResponse.Create(msg);
-			//Debug.WriteLine("Msg: " + msg.Type);
-			// Debug.WriteLine("{0}=>LOCAL::{1}: {2}", remote, msg.Type,
-			// 	string.Join(",", (from a in data select a.ToString("X2")).ToArray()));
 			switch (response.Type) {
 				case MessageType.DeviceDiscovery:
 					if (msg.Flag != MessageFlag.SystemMessage) {
@@ -101,13 +99,9 @@ namespace DreamScreenNet {
 					if (msg.Flag == MessageFlag.SystemMessage) {
 						SubscriptionRequested?.Invoke(this, new DeviceSubscriptionEventArgs(msg.Target));
 						if (_subscribing && Equals(msg.Target, _subDevice)) {
-							//Debug.WriteLine("Sending sub response...");
 							var resp = new Message(msg.Target, MessageType.Subscribe, MessageFlag.SubscriptionResponse,
 								msg.Group) {Payload = new Payload(new object[] {(byte) 0x01})};
 							BroadcastMessageAsync(resp).ConfigureAwait(false);
-						} else {
-							//Debug.WriteLine($"Sub responses don't match or not subscribing: {msg.Target}, {_subDevice}");
-
 						}
 					}
 					
@@ -153,11 +147,8 @@ namespace DreamScreenNet {
 			var data = packet.Encode();
 
 			var ep = new IPEndPoint(packet.Target, 8888);
-			// Debug.WriteLine($"LOCAL=>{ep}::{packet.Type}: "
-			//                 +
-			// 	                string.Join(",", (from a in data select a.ToString("X2")).ToArray()));
-
-			await _sender.SendAsync(data, data.Length, ep);
+			 
+			await _sender.SendAsync(data, data.Length, ep).ConfigureAwait(false);
 		}
 
 

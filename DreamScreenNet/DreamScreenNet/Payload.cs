@@ -93,7 +93,6 @@ namespace DreamScreenNet {
 						Add(dt);
 						break;
 					default:
-						Debug.WriteLine("Unsupported type!" + args.GetType().FullName);
 						throw new NotSupportedException(args.GetType().FullName);
 				}
 			}
@@ -190,11 +189,10 @@ namespace DreamScreenNet {
 			try {
 				var stamp = GetUInt64();
 				var epoch = stamp / 1000;
-				Debug.WriteLine("Stamp: " + epoch);
 				date = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
 					.AddSeconds(epoch);
 			} catch (Exception e) {
-				Debug.WriteLine("Exception: " + e.Message);
+				// Ignored
 			}
 
 			Objects.Add(date);
@@ -221,7 +219,7 @@ namespace DreamScreenNet {
 			try {
 				num = _br.ReadByte();
 			} catch {
-				Debug.WriteLine("Error reading byte, pos is " + _ms.Position);
+				//Debug.WriteLine("Error reading byte, pos is " + _ms.Position);
 			}
 
 			Objects.Add(num);
@@ -241,7 +239,7 @@ namespace DreamScreenNet {
 			try {
 				num = _br.ReadUInt16();
 			} catch {
-				Debug.WriteLine($"Error getting Uint16 from payload, pointer {_ms.Position} of range: " + _len);
+				//Debug.WriteLine($"Error getting Uint16 from payload, pointer {_ms.Position} of range: " + _len);
 			}
 
 			Objects.Add(num);
@@ -257,7 +255,7 @@ namespace DreamScreenNet {
 			try {
 				num = _br.ReadInt16();
 			} catch {
-				Debug.WriteLine($"Error getting int16 from payload, pointer {_ms.Position} of range: " + _len);
+				//Debug.WriteLine($"Error getting int16 from payload, pointer {_ms.Position} of range: " + _len);
 			}
 
 			Objects.Add(num);
@@ -273,7 +271,7 @@ namespace DreamScreenNet {
 			try {
 				num = _br.ReadInt32();
 			} catch {
-				Debug.WriteLine($"Error getting Int32 from payload, pointer {_ms.Position} of range: " + _len);
+				//Debug.WriteLine($"Error getting Int32 from payload, pointer {_ms.Position} of range: " + _len);
 			}
 
 			Objects.Add(num);
@@ -289,7 +287,7 @@ namespace DreamScreenNet {
 			try {
 				num = _br.ReadUInt32();
 			} catch {
-				Debug.WriteLine($"Error getting Uint32 from payload, pointer {_ms.Position} of range: " + _len);
+				//Debug.WriteLine($"Error getting Uint32 from payload, pointer {_ms.Position} of range: " + _len);
 			}
 
 			Objects.Add(num);
@@ -305,7 +303,7 @@ namespace DreamScreenNet {
 			try {
 				num = _br.ReadInt64();
 			} catch {
-				Debug.WriteLine($"Error getting Int64 from payload, pointer {_ms.Position} of range: " + _len);
+				//Debug.WriteLine($"Error getting Int64 from payload, pointer {_ms.Position} of range: " + _len);
 			}
 
 			Objects.Add(num);
@@ -321,7 +319,7 @@ namespace DreamScreenNet {
 			try {
 				num = _br.ReadUInt64();
 			} catch {
-				Debug.WriteLine($"Error getting Uint64 from payload, pointer {_ms.Position} of range: " + _len);
+				//Debug.WriteLine($"Error getting Uint64 from payload, pointer {_ms.Position} of range: " + _len);
 			}
 
 			Objects.Add(num);
@@ -337,7 +335,7 @@ namespace DreamScreenNet {
 			try {
 				num = _br.ReadSingle();
 			} catch {
-				Debug.WriteLine($"Error getting Float32 from payload, pointer {_ms.Position} of range: " + _len);
+				//ignored
 			}
 
 			Objects.Add(num);
@@ -365,7 +363,7 @@ namespace DreamScreenNet {
 				output = builder.ToString();
 				output = output.Replace("\0", string.Empty);
 			} catch {
-				Debug.WriteLine($"Error getting string, pointer {_ms.Position} out of range: " + _len);
+				//ignored
 			}
 
 			Objects.Add(output);

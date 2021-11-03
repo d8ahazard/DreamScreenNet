@@ -29,6 +29,9 @@ namespace DreamScreenNet {
 				case MessageType.Brightness:
 					response = new BrightnessResponse(message);
 					break;
+				case MessageType.GetSerial:
+					response = new DeviceSerialResponse(message);
+					break;
 				case MessageType.Mode:
 					response = new ModeResponse(message);
 					break;
@@ -43,8 +46,6 @@ namespace DreamScreenNet {
 					break;
 				case MessageType.AmbientModeType:
 					response = new AmbientModeResponse(message);
-					break;
-				case MessageType.GetSerial:
 					break;
 				case MessageType.GroupName:
 					response = new GroupNameResponse(message);
@@ -142,6 +143,15 @@ namespace DreamScreenNet {
 
 		internal DeviceNameResponse(Message message) : base(message) {
 			DeviceName = message.Payload.GetString(16);
+		}
+	}
+	
+	[Serializable]
+	public class DeviceSerialResponse : DreamScreenResponse {
+		[JsonProperty] public string DeviceSerial { get; set; }
+
+		internal DeviceSerialResponse(Message message) : base(message) {
+			DeviceSerial = message.Payload.GetString();
 		}
 	}
 

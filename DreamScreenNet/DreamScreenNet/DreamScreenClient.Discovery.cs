@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DreamScreenNet.Devices;
 using DreamScreenNet.Enum;
+using Newtonsoft.Json;
 
 namespace DreamScreenNet {
 	public partial class DreamScreenClient {
@@ -29,23 +30,14 @@ namespace DreamScreenNet {
 		private void ProcessDeviceDiscoveryMessage(IPAddress remoteAddress, DreamScreenResponse.StateResponse msg) {
 			var id = msg.Target.ToString();
 			msg.Identifier = 2;
-			
 			if (_discoveredDevices.ContainsKey(id)) {
 				_discoveredDevices[id].LastSeen = DateTime.UtcNow; //Update datestamp
 				_discoveredDevices[id].IpAddress = remoteAddress; //Update hostname in case IP changed
-				return;
-			}
-
-			if (msg.Identifier != _discoverSourceId || //did we request the discovery?
-			    _discoverCancellationSource == null ||
-			    _discoverCancellationSource.IsCancellationRequested) {
-				return;
 			}
 
 			if (msg.Device == null) {
 				return;
 			}
-
 			_discoveredDevices[id] = msg.Device;
 			_devices.Add(msg.Device);
 			DeviceDiscovered?.Invoke(this, new DeviceDiscoveryEventArgs(msg.Device));
@@ -73,13 +65,7 @@ namespace DreamScreenNet {
 			Task.Run(async () => {
 				await BroadcastMessageAsync(discoPacket);
 				while (!token.IsCancellationRequested) {
-					try {
-						//await BroadcastMessageAsync<UnknownResponse>(null, header,
-						//MessageType.DeviceGetService);
-					} catch (Exception e) {
-						Debug.WriteLine("Broadcast exception: " + e.Message + e.StackTrace);
-					}
-
+					
 					await Task.Delay(1, token);
 					var lostDevices = _devices.Where(d => (DateTime.UtcNow - d.LastSeen).TotalMinutes > 5).ToArray();
 					if (!lostDevices.Any()) {
